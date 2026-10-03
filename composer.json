@@ -1,5 +1,5 @@
 {
-    "name": "mornrain/morn-perf-sentry",
+    "name": "mornrain-lin/morn-perf-sentry",
     "description": "前端性能埋点与资源评分库：静态分析 HTML 中的 CSS/JS/图片/字体，按 Core Web Vitals 规则输出 0-100 分与逐项扣分明细，并生成懒加载与缓存策略建议。零网络请求，PHP 7.4+。",
     "type": "library",
     "keywords": [
@@ -13,20 +13,20 @@
         "cls",
         "lcp"
     ],
-    "homepage": "https://github.com/MornRain/morn-perf-sentry",
+    "homepage": "https://github.com/mornrain-lin/morn-perf-sentry",
     "license": "MIT",
     "authors": [
         {
-            "name": "MornRain",
-            "homepage": "https://github.com/MornRain",
+            "name": "mornrain-lin",
+            "homepage": "https://github.com/mornrain-lin",
             "role": "Developer"
         }
     ],
     "support": {
-        "issues": "https://github.com/MornRain/morn-perf-sentry/issues",
-        "source": "https://github.com/MornRain/morn-perf-sentry",
-        "security": "https://github.com/MornRain/morn-perf-sentry/security/advisories/new",
-        "docs": "https://github.com/MornRain/morn-perf-sentry#readme"
+        "issues": "https://github.com/mornrain-lin/morn-perf-sentry/issues",
+        "source": "https://github.com/mornrain-lin/morn-perf-sentry",
+        "security": "https://github.com/mornrain-lin/morn-perf-sentry/security/advisories/new",
+        "docs": "https://github.com/mornrain-lin/morn-perf-sentry#readme"
     },
     "require": {
         "php": ">=7.4"

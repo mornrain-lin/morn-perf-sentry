@@ -72,4 +72,4 @@
 - `fixtures/sample.html`：含 13 处典型性能问题的测试样例
 - `examples/audit.php`：9 个场景的可运行示例，含优化前后评分对比
 
-[1.0.0]: https://github.com/MornRain/morn-perf-sentry/releases/tag/v1.0.0
+[1.0.0]: https://github.com/mornrain-lin/morn-perf-sentry/releases/tag/v1.0.0

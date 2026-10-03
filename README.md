@@ -39,7 +39,7 @@ MornRain Perf Sentry 就是这个：
 ## 安装
 
 ```bash
-composer require mornrain/morn-perf-sentry
+composer require mornrain-lin/morn-perf-sentry
 ```
 
 或手动引入：
