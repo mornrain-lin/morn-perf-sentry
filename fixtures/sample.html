@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>性能审计示例页面 · MornRain Perf Sentry</title>
+    <meta name="description" content="这是一个刻意包含多种性能问题的示例页面，用于演示 ResourceAuditor 与 ScoreCalculator。">
+
+    <!-- 问题 1：未压缩的大 CSS（无版本标识、无 preload） -->
+    <link rel="stylesheet" href="/wp-content/themes/demo/style.css">
+
+    <!-- 问题 2：首屏之外的 CSS 也放在 head，阻塞渲染 -->
+    <link rel="stylesheet" href="/wp-content/plugins/banner/style.css">
+
+    <!-- 正常：带版本号的 CSS -->
+    <link rel="stylesheet" href="/wp-content/themes/demo/print.css?ver=1.4.2">
+
+    <!-- 问题 3：字体 preload 缺少 crossorigin，会重复下载 -->
+    <link rel="preload" href="/wp-content/themes/demo/fonts/inter-var.woff2" as="font" type="font/woff2">
+
+    <!-- 问题 4：图标类资源，计入请求数 -->
+    <link rel="icon" href="/favicon.ico">
+
+    <!-- 问题 5：head 内联样式，体积 2.1 KB，无法被缓存 -->
+    <style>
+        :root { --brand: #2f6fed; --text: #1f2933; }
+        .container { max-width: 1140px; margin: 0 auto; padding: 0 16px; }
+        .hero { background: linear-gradient(135deg, #2f6fed 0%, #6b3fd4 100%); color: #fff; padding: 64px 0; }
+        .hero h1 { font-size: 32px; margin: 0 0 12px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+        .card { border: 1px solid #e4e7eb; border-radius: 10px; padding: 20px; background: #fff; }
+        .card h3 { margin: 0 0 8px; font-size: 18px; }
+        .muted { color: #6b7280; font-size: 14px; }
+        @media (max-width: 768px) { .hero { padding: 40px 0; } .hero h1 { font-size: 24px; } }
+    </style>
+
+    <!-- 问题 6：head 内同步脚本，阻塞渲染（无 defer / async） -->
+    <script src="/wp-content/themes/demo/js/legacy-widget.js"></script>
+
+    <!-- 问题 7：head 内同步统计脚本，阻塞渲染 -->
+    <script src="/wp-content/themes/demo/js/analytics-sync.js"></script>
+
+    <!-- 正常：带 defer 的脚本 -->
+    <script src="/wp-content/themes/demo/js/main.js?ver=1.4.2" defer></script>
+
+    <!-- 问题 8：站外第三方脚本（同站子域不算第三方），体积大且未压缩 -->
+    <script src="https://cdn.thirdparty-analytics.net/analytics.js?ver=2.1" defer></script>
+</head>
+<body>
+<header class="site-header">
+    <div class="container">
+        <a href="/" class="logo">MornRain Demo</a>
+        <nav>
+            <a href="/blog/">技术志</a>
+            <a href="/about/">关于</a>
+            <a href="/contact/">联系</a>
+        </nav>
+    </div>
+</header>
+
+<!-- 问题 8：首屏主图未声明 fetchpriority / loading，且无 width、height -->
+<div class="hero">
+    <div class="container">
+        <img src="/wp-content/uploads/2026/10/hero-banner-full.jpg" alt="首屏横幅">
+    </div>
+</div>
+
+<main class="container">
+    <h1>性能审计示例</h1>
+    <p class="muted">本页故意保留了十余处典型性能问题，用于验证审计与评分逻辑。</p>
+
+    <div class="grid">
+        <!-- 问题 9：内嵌图片未懒加载 -->
+        <div class="card">
+            <img src="/wp-content/uploads/2026/10/post-01.jpg" alt="文章配图一">
+            <h3>文章一</h3>
+            <p class="muted">未启用 loading="lazy"。</p>
+        </div>
+
+        <!-- 正常：懒加载 + 尺寸齐全 -->
+        <div class="card">
+            <img src="/wp-content/uploads/2026/10/post-02.jpg" alt="文章配图二"
+                 loading="lazy" decoding="async" width="640" height="360">
+            <h3>文章二</h3>
+            <p class="muted">已启用懒加载并声明尺寸。</p>
+        </div>
+
+        <!-- 问题 10：懒加载但缺 width/height，仍会造成 CLS -->
+        <div class="card">
+            <img src="/wp-content/uploads/2026/10/post-03.jpg" alt="文章配图三" loading="lazy">
+            <h3>文章三</h3>
+            <p class="muted">有 lazy 但缺尺寸。</p>
+        </div>
+    </div>
+
+    <!-- 问题 11：iframe 未声明 loading，且第三方域名 -->
+    <iframe src="https://player.example.com/v/abc123" title="演示视频" width="640" height="360"></iframe>
+
+    <!-- 问题 12：srcset 用得不错，但缺 width/height -->
+    <picture>
+        <source srcset="/wp-content/uploads/2026/10/wide.avif 1x, /wp-content/uploads/2026/10/wide-2x.avif 2x"
+                type="image/avif" loading="lazy">
+        <img src="/wp-content/uploads/2026/10/wide.jpg" alt="响应式配图" loading="lazy">
+    </picture>
+
+    <!-- 问题 13：body 末尾的同步脚本（此处不阻塞首屏，但仍偏大） -->
+    <script src="/wp-content/themes/demo/js/carousel.js"></script>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p class="muted">© 2026 MornRain · 本页为性能审计测试样例</p>
+    </div>
+</footer>
+</body>
+</html>
